@@ -18,7 +18,7 @@ docker build -t cpp_template .
 ```
 
 # Run things
-```sh
+```
 Usage: ./run.sh [OPTIONS] [COMMAND]
 
 Commands:
