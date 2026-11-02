@@ -24,6 +24,7 @@ Usage: ./run.sh [OPTIONS] [COMMAND]
 Commands:
   test              Configure, build, and run Catch2 test suite (default)
   app               Build and run the main application executable
+  docs              Build HTML documentation with Doxygen to ./build_docs/...
   build             Build targets only without execution
   bash              Open an interactive shell inside the container
 
