@@ -26,6 +26,18 @@ case "${MODE}" in
     ninja -C "${BUILD_DIR}" -j "${JOBS}" cpp_template
     "${BUILD_DIR}/cpp_template" "$@"
     ;;
+	docs)
+    ninja -C "${BUILD_DIR}" -j "${JOBS}" docs
+    echo "==> Copying documentation to host workspace..."
+    rm -rf /workspace/build_docs
+    cp -r "${BUILD_DIR}/docs/html" /workspace/build_docs
+    
+    # Hand ownership back to host user if HOST_UID was supplied
+    if [[ -n "${HOST_UID:-}" ]]; then
+      chown -R "${HOST_UID}:${HOST_GID:-${HOST_UID}}" /workspace/build_docs
+    fi
+    echo "==> Documentation ready at ./build_docs/index.html"
+    ;;
   bash)
     exec bash
     ;;

@@ -8,6 +8,7 @@ Usage: ./run.sh [OPTIONS] [COMMAND]
 Commands:
   test              Configure, build, and run Catch2 test suite (default)
   app               Build and run the main application executable
+	docs              Build HTML documentation with Doxygen
   build             Build targets only without execution
   bash              Open an interactive shell inside the container
 
@@ -93,18 +94,20 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Wipe /build if clean build requested
+# Wipe /build and reset cache permissions if clean build requested
 if [[ "${CLEAN}" == true ]]; then
-  echo "==> Cleaning /build directory..."
+  echo "==> Cleaning /build and fixing /cache permissions..."
   docker run --rm \
     -v "$(pwd)":/workspace \
     -v cpm_cache:/cache/cpm \
     -v ccache_data:/cache/ccache \
-    cpp_template rm -rf /build
+    cpp_template bash -c "rm -rf /build && chmod -R a+rwX /cache"
 fi
 
 # Run container with injected CMake options
 docker run --rm -it \
+	-e HOST_UID="$(id -u)" \
+  -e HOST_GID="$(id -g)" \
   -e BUILD_JOBS="${JOBS}" \
   -e CMAKE_EXTRA_FLAGS="-DENABLE_CLANG_TIDY=${ENABLE_CLANG_TIDY} -DENABLE_CPPCHECK=${ENABLE_CPPCHECK} -DENABLE_ANALYZER=${ENABLE_ANALYZER} -DENABLE_SAN_ADDR=${ENABLE_SAN_ADDR} -DENABLE_SAN_THREAD=${ENABLE_SAN_THREAD}" \
   -v "$(pwd)":/workspace \

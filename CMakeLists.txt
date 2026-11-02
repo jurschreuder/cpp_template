@@ -213,7 +213,49 @@ endif()
 # --- Documentation ---
 find_package(Doxygen QUIET)
 if(DOXYGEN_FOUND)
-  set(DOXYGEN_EXTRACT_ALL YES)
+  CPMAddPackage(
+    NAME doxygen_awesome_css
+    GITHUB_REPOSITORY jothepro/doxygen-awesome-css
+    GIT_TAG v2.3.4
+    DOWNLOAD_ONLY YES
+  )
+
+  # Output target
+  set(DOXYGEN_GENERATE_HTML YES)
   set(DOXYGEN_GENERATE_LATEX NO)
-  doxygen_add_docs(docs include src COMMENT "Generate documentation")
+  set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs")
+
+  # Full symbol extraction (vital for free functions & namespaces)
+  set(DOXYGEN_EXTRACT_ALL YES)
+  set(DOXYGEN_EXTRACT_STATIC YES)
+  set(DOXYGEN_EXTRACT_LOCAL_CLASSES YES)
+  set(DOXYGEN_EXTRACT_ANON_NSPACES YES)
+  set(DOXYGEN_RECURSIVE YES)
+
+  # Ensure C++ header extensions are parsed as C++
+  set(DOXYGEN_EXTENSION_MAPPING "h=C++" "hpp=C++" "cpp=C++")
+  set(DOXYGEN_FILE_PATTERNS "*.hpp" "*.h" "*.cpp")
+
+  # Navigation & UI settings
+  set(DOXYGEN_GENERATE_TREEVIEW YES) # Creates the expandable tree sidebar
+  set(DOXYGEN_FULL_PATH_NAMES NO)
+  set(DOXYGEN_PROJECT_NAME "Modern C++26 Template")
+
+  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+  endif()
+
+  if(doxygen_awesome_css_ADDED)
+    set(DOXYGEN_HTML_EXTRA_STYLESHEET 
+      "${doxygen_awesome_css_SOURCE_DIR}/doxygen-awesome.css"
+      "${doxygen_awesome_css_SOURCE_DIR}/doxygen-awesome-sidebar-only.css"
+    )
+  endif()
+
+  doxygen_add_docs(docs 
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
+    COMMENT "Generate HTML documentation"
+  )
 endif()

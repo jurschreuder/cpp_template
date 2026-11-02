@@ -1,6 +1,7 @@
 # === Build & Cache Artifacts ===
 /build/
 /build-*/
+/build_docs/
 /out/
 *.o
 *.obj
