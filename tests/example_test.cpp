@@ -4,13 +4,8 @@
 #include <iostream>
 #include <sstream>
 
-TEST_CASE("app::test outputs expected message to stdout", "[example]") {
-    std::ostringstream buffer;
-    auto* old_buf = std::cout.rdbuf(buffer.rdbuf());
+TEST_CASE("app::test example", "[ptrdiff]") {
 
-    app::test("world");
-
-    std::cout.rdbuf(old_buf);
-
-    REQUIRE(buffer.str() == "Example: world\n");
+    auto result = app::test("Are you testing me?");
+    REQUIRE(result == 42);
 }

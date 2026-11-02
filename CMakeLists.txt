@@ -8,11 +8,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(CTest)
 include(cmake/CPM.cmake)
 
-# NVIDIA/stdexec (C++ execution framework P2300)
 # Disables stdexec's own internal tests and examples to speed up configuration
 set(STDEXEC_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(STDEXEC_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+# 
 
+# NVIDIA/stdexec (C++ execution framework P2300)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF) # NVIDIA/stdexec does not play nice with modules
 CPMAddPackage(
   NAME stdexec
   GITHUB_REPOSITORY NVIDIA/stdexec
@@ -48,6 +50,11 @@ target_link_libraries(app_core
     nlohmann_json::nlohmann_json
 )
 
+# Link experimental standard library symbols (e.g. <debugging>, <simd>) across all targets
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  target_link_libraries(app_core PUBLIC stdc++exp)
+endif()
+
 # --- Executable Target ---
 add_executable(${PROJECT_NAME} src/main.cpp)
 
@@ -64,7 +71,11 @@ if(BUILD_TESTING)
     GIT_TAG v3.8.1
   )
 
-  add_executable(unit_tests tests/example_test.cpp)
+  add_executable(unit_tests 
+		tests/example_test.cpp
+    tests/cpp26_test.cpp
+    tests/stdexec_test.cpp
+  )
 
   target_link_libraries(unit_tests
     PRIVATE

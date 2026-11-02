@@ -30,6 +30,10 @@ docker build -t cpp_template .
 # Run only the app binary
 ./run.sh app
 
+# Start all over with clean cache
+./run.sh --clean
+# Or in one go
+./run.sh --clean -j 8 test
 ```
 
 # Interactive Development Shell
