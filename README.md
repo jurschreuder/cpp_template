@@ -49,11 +49,6 @@ Examples:
   ./run.sh --all-static -c build      # Clean build running all static analyzers
 ```
 
-# Clean build cache, run all static analysers, and run tests (on 8 cores)
-```sh
-./run.sh -c --all-static test -j 8
-```
-
 # Just test
 ```sh
 ./run.sh test -j 8
@@ -63,3 +58,9 @@ Examples:
 ```sh
 ./run.sh app -j 8
 ```
+
+### Clean build cache, run all static analysers, and run tests (on 8 cores)
+```sh
+./run.sh -c --all-static test -j 8
+```
+
