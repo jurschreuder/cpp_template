@@ -1,0 +1,73 @@
+# === Build & Cache Artifacts ===
+/build/
+/build-*/
+/out/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# CMake
+CMakeUserPresets.json
+CMakeFiles/
+CMakeCache.txt
+CTestTestfile.cmake
+cmake_install.cmake
+
+# Ccache & CPM local caches (if mounted locally)
+.cache/
+/cache/
+
+# Clangd & Tooling
+.clangd/
+compile_commands.json
+
+# === Editors & IDEs ===
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Vim & Neovim
+*.swp
+*.swo
+*.swn
+*.swm
+*~
+*.un~
+.netrwhist
+Session.vim
+.nvimlog
+
+# JetBrains (CLion, etc.)
+.idea/
+cmake-build-*/
+
+# === OS Generated Files ===
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.directory
+.Trash-*
