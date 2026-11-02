@@ -65,3 +65,7 @@ Examples:
 ./run.sh -c --all-static test -j 8
 ```
 
+### Make some Doxygen docs in ./build_docs/...
+```sh
+./run.sh docs
+```
