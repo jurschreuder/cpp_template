@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ccache \
     doxygen \
     curl \
+		clang-tidy \
+    cppcheck \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /workspace

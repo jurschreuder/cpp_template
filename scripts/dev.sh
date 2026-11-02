@@ -1,35 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Default to 2 parallel jobs if not set (keeps RAM usage safe)
-BUILD_JOBS="${BUILD_JOBS:-2}"
-TARGET_ACTION="${1:-all}"
+BUILD_DIR="/build"
+JOBS="${BUILD_JOBS:-2}"
+EXTRA_FLAGS="${CMAKE_EXTRA_FLAGS:-}"
 
-# Configure
-cmake -S /workspace -B /build -G Ninja \
+MODE="${1:-test}"
+shift || true
+
+# Configure if not already configured, or update cache with any changed flags
+cmake -B "${BUILD_DIR}" -G Ninja \
   -DCMAKE_BUILD_TYPE=Debug \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-  -DBUILD_TESTING=ON
+  ${EXTRA_FLAGS}
 
-case "${TARGET_ACTION}" in
-  test)
-    # Build only the test target and run ctest
-    cmake --build /build --target unit_tests --parallel "${BUILD_JOBS}"
-    exec ctest --test-dir /build --output-on-failure "${@:2}"
-    ;;
+case "${MODE}" in
   build)
-    # Build everything without running
-    exec cmake --build /build --parallel "${BUILD_JOBS}"
+    ninja -C "${BUILD_DIR}" -j "${JOBS}"
+    ;;
+  test)
+    ninja -C "${BUILD_DIR}" -j "${JOBS}" unit_tests
+    ctest --test-dir "${BUILD_DIR}" --output-on-failure "$@"
     ;;
   app)
-    # Build and run only the binary
-    cmake --build /build --target cpp_template --parallel "${BUILD_JOBS}"
-    exec /build/cpp_template
+    ninja -C "${BUILD_DIR}" -j "${JOBS}" cpp_template
+    "${BUILD_DIR}/cpp_template" "$@"
     ;;
-  all|*)
-    # Default: build everything, run tests, run app
-    cmake --build /build --parallel "${BUILD_JOBS}"
-    ctest --test-dir /build --output-on-failure
-    exec /build/cpp_template
+  bash)
+    exec bash
+    ;;
+  *)
+    echo "Unknown command: ${MODE}"
+    exit 1
     ;;
 esac

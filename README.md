@@ -19,42 +19,47 @@ docker build -t cpp_template .
 
 # Run things
 ```sh
-./run.sh -j 4
+Usage: ./run.sh [OPTIONS] [COMMAND]
 
-# Run only tests with 1 thread:
-./run.sh test -j 1
+Commands:
+  test              Configure, build, and run Catch2 test suite (default)
+  app               Build and run the main application executable
+  build             Build targets only without execution
+  bash              Open an interactive shell inside the container
 
-# Pass flags through to ctest:
-./run.sh test -j4 -V
+Options:
+  -j <N>            Number of parallel build jobs (default: 2 or $BUILD_JOBS)
+  -c, --clean       Wipe /build directory inside the container before running
 
-# Run only the app binary
-./run.sh app
+Static Analysis & Sanitizers:
+  --tidy            Run clang-tidy during compilation
+  --cppcheck        Run cppcheck during compilation
+  --analyzer        Enable GCC static analyzer (-fanalyzer)
+  --all-static      Enable clang-tidy, cppcheck, and -fanalyzer together
+  --asan            Enable AddressSanitizer & UndefinedBehaviorSanitizer
+  --tsan            Enable ThreadSanitizer (data-race detection)
 
-# Start all over with clean cache
-./run.sh --clean
-# Or in one go
-./run.sh --clean -j 8 test
+General:
+  -h, --help        Show this help message and exit
+
+Examples:
+  ./run.sh -c test                    # Clean build and run tests
+  ./run.sh --tidy -j 4 build          # Build with clang-tidy on 4 cores
+  ./run.sh --asan test                # Run tests instrumented with ASan/UBSan
+  ./run.sh --all-static -c build      # Clean build running all static analyzers
 ```
 
-# Interactive Development Shell
+# Clean build cache, run all static analysers, and run tests (on 8 cores)
 ```sh
-docker run --rm -it \
-  -v "$(pwd)":/workspace \
-  -v cpm_cache:/cache/cpm \
-  -v ccache_data:/cache/ccache \
-  cpp_template bash
+./run.sh -c --all-static test -j 8
 ```
-Inside the shell:
+
+# Just test
 ```sh
-# Configure build
-cmake -S /workspace -B /build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON
+./run.sh test -j 8
+```
 
-# Compile everything
-cmake --build /build
-
-# Run tests
-ctest --test-dir /build --output-on-failure
-
-# Run the app
-/build/cpp_template
+# Just run
+```sh
+./run.sh app -j 8
 ```
